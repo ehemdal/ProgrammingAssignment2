@@ -9,7 +9,7 @@
 # A function to set the inverse of the matrix in the special env.
 # A function to get the value of the inverse from the cached (set) value if it exists
 
-# I think the function will be just like the makeVector sample except that
+# The function will be just like the makeVector sample except that
 # the argument will be an R matrix and the calculation will use solve() instead 
 # of mean().
 
@@ -22,22 +22,24 @@
 
 
 ## Write a short comment describing this function
+## makeCacheMatrix() creates a CacheMatrix object that can cache the calculation
+## of its inverse.
 
 makeCacheMatrix <- function(x = matrix()) {
   
-  inv <- NULL # value of inverse starts as NULL
+  inv <- NULL # value of inverse starts as NULL 
   
   set <- function (y) {
     x <<- y
-    inv <<- NULL # inverse is N.G. if the matrix is re-set
+    inv <<- NULL # delete the saved inverse if the matrix is re-set
   }
   
-  get <- function() x  #return the matrix
+  get <- function() x  #return the matrix data
   
-  setinv <- function(solve) inv <<- solve(x)
+  setinv <- function(solve) inv <<- solve(x) # Pass in solve to Calculate the inverse
   
-  getinv <- function() inv
-  
+  getinv <- function() inv 
+
   # Build the CacheMatrix object
   list(set = set, get = get, setinv = setinv, getinv = getinv)
 
@@ -45,7 +47,18 @@ makeCacheMatrix <- function(x = matrix()) {
 
 
 ## Write a short comment describing this function
+# cacheSolve() takes a CacheMatrix object and returns its inverse.
+# It calculates the inverse if needed, or returns it from cache
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
+  inv <- x$getinv()
+  if (!is.null(inv)) {
+    message("getting cached data")
+    return(inv)
+  }
+  data <- x$get()
+  inv <- solve(data, ...)
+  x$setinv(inv)
+  inv
 }
